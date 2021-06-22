@@ -71,4 +71,21 @@ class Database
         $this->query($sql);
         return $this->fetch_all_as_obj();
     }
+
+    /**
+     * @return mixed
+     */
+    public function fetch_as_obj(): mixed
+    {
+        $this->execute();
+        return $this->stmt->fetch(PDO::FETCH_OBJ);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function rowCount(): mixed
+    {
+        return $this->stmt->rowCount();
+    }
 }

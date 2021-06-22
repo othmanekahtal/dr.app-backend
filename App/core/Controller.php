@@ -20,7 +20,7 @@ class Controller
      * Controller constructor.
      *
      **/
-    private $key = 'marniga_Token_halal';
+    private $key = 'dr.App';
 
     //load model
     protected function model($model)
@@ -30,7 +30,7 @@ class Controller
         return new $model();
     }
 
-    public function authorization()
+    public function generateToken()
     {
         $iat = time();
         $exp = $iat + 60 * 60;

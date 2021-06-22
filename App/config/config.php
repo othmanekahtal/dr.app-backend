@@ -1,6 +1,6 @@
 <?php
 //DATABASE PARAMETERS :
-define('USER', 'apiAdmin');
+define('USER', 'dr.app.admin');
 define('HOST', 'localhost');
-define('PASSWORD', 'apiAdmin');
-define('DATABASE', 'api_DB');
+define('PASSWORD', 'dr.app');
+define('DATABASE', 'dr.app');
