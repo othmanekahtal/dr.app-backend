@@ -10,7 +10,6 @@ class api_services
     public function __construct()
     {
         $this->database = new Database();
-
     }
 
     public function has_user_record($id_user, $id_record)
@@ -32,6 +31,15 @@ class api_services
         }
     }
 
+    public function verify_user($id): int
+    {
+        $sql = /** @lang sql */
+            'select * from users where id=:user and access = 1';
+        $this->database->query($sql);
+        $this->database->bind(':user', $id);
+        return count($this->database->fetch_all_as_arr());
+    }
+
     public function all_user_record($idUser)
     {
         $sql = /** @lang text */
@@ -50,10 +58,19 @@ class api_services
         return $this->database->fetch_all_as_obj();
     }
 
-    public function add($date, $user, $time)
+    public function change_status_record($id)
     {
         $sql = /** @lang text */
-            'insert into users (date,user,time) values (:date,:user,:time)';
+            'update appointment set status=cancelled where id=:id';
+        $this->database->query($sql);
+        $this->database->bind(':id', $id, PDO::PARAM_INT);
+        return $this->database->execute();
+    }
+
+    public function add($user, $time, $date)
+    {
+        $sql = /** @lang text */
+            'insert into appointment (date,user,time) values (:date,:user,:time)';
         $this->database->query($sql);
         $this->database->bind(':date', $date, PDO::PARAM_STR);
         $this->database->bind(':user', $user, PDO::PARAM_INT);
@@ -61,12 +78,16 @@ class api_services
         return $this->database->execute();
     }
 
-    public function verify_user($id): int
+    public function update($user, $time, $date, $id)
     {
-        $sql = /** @lang sql */
-            'select * from users where id=:user and access = 1';
+        $sql = /** @lang text */
+            'update appointment set date=:date,user=:user,time=:time where id = :id';
         $this->database->query($sql);
-        $this->database->bind(':user', $id);
-        return count($this->database->fetch_all_as_arr());
+        $this->database->bind(':date', $date, PDO::PARAM_STR);
+        $this->database->bind(':user', $user, PDO::PARAM_INT);
+        $this->database->bind(':id', $id, PDO::PARAM_INT);
+        $this->database->bind(':time', $time, PDO::PARAM_STR);
+        return $this->database->execute();
     }
+
 }

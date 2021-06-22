@@ -77,8 +77,7 @@ class Api extends Controller
             die(json_encode(['error' => true, 'message' => "you are not send require params"]));
     }
 
-
-    public function changeStatus($params)
+    public function status($params)
     {
         if (isset($params)) {
             $idUser = $params[0];
@@ -89,9 +88,13 @@ class Api extends Controller
             if ($this->gettoken()) {
                 try {
                     $this->verification($this->gettoken());
-                    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                    if ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
                         if ($this->db->has_user_record($idUser, $id)) {
-                            die(json_encode(['error' => false, 'message' => 'success']));
+                            if ($this->db->change_status_record($id)) {
+                                (json_encode(['error' => false, 'message' => 'success']));
+                            } else {
+                                (json_encode(['error' => true, 'message' => 'can\'t delete record']));
+                            }
                         } else {
                             die(json_encode(['error' => true, 'message' => 'not data']));
                         }
@@ -108,65 +111,62 @@ class Api extends Controller
         }
     }
 
-    public function updateRecord($params)
+    public function update()
     {
-        if (isset($params)) {
-            $idUser = $params[0];
-            $id = $params[1];
-            if (!$id and !$idUser) {
-                die(json_encode(['error' => true, 'message' => 'not params']));
-            }
-            if ($this->gettoken()) {
-                try {
-                    $this->verification($this->gettoken());
-                    if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-                        if ($this->db->has_user_record($idUser, $id)) {
-                            $record = $this->db->Read_Record($id);
-                            die(json_encode(['error' => false, 'record' => $record[0]]));
+        if ($this->gettoken()) {
+            try {
+                $this->verification($this->gettoken());
+                if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                    if (isset($_POST['id']) && isset($_POST['user_id']) && isset($_POST['date']) && isset
+                        ($_POST['time'])) {
+                        $id = $_POST['id'];
+                        $time = $_POST['time'];
+                        $date = $_POST['date'];
+                        $user_id = $_POST['user_id'];
+                        if ($this->db->has_user_record($user_id, $id)) {
+                            if ($this->db->update($user_id, $time, $date, $id)) {
+                                die(json_encode(['error' => false, 'message' => 'successfully']));
+                            } else {
+                                die(json_encode(['error' => true, 'message' => 'failed']));
+                            }
                         } else {
                             die(json_encode(['error' => true, 'message' => 'not data']));
                         }
+                    } else {
+                        die(json_encode(['error' => true, 'message' => 'require data not catch it']));
                     }
-                } catch (\Throwable $th) {
-                    die(json_encode(['error' => true, 'message' => "you are not authorized" . $th]));
-                }
 
-            } else {
-                die(json_encode(['error' => true, 'message' => "you need authorization"]));
+                }
+            } catch (\Throwable $th) {
+                die(json_encode(['error' => true, 'message' => "you are not authorized" . $th]));
             }
-        } else {
-            die(json_encode(['error' => true, 'message' => "you are not send require params"]));
         }
     }
 
-    public function addRecord($params)
+    public function add()
     {
-        if (isset($params)) {
-            $idUser = $params[0];
-            $id = $params[1];
-            if (!$id and !$idUser) {
-                die(json_encode(['error' => true, 'message' => 'not params']));
-            }
-            if ($this->gettoken()) {
-                try {
-                    $this->verification($this->gettoken());
-                    if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-                        if ($this->db->has_user_record($idUser, $id)) {
-                            $record = $this->db->Read_Record($id);
-                            die(json_encode(['error' => false, 'record' => $record[0]]));
+        if ($this->gettoken()) {
+            try {
+                $this->verification($this->gettoken());
+                if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                    if (isset($_POST['user_id']) && isset($_POST['date']) && isset
+                        ($_POST['time'])) {
+                        $time = $_POST['time'];
+                        $date = $_POST['date'];
+                        $user_id = $_POST['user_id'];
+                        if ($this->db->add($user_id, $time, $date)) {
+                            die(json_encode(['error' => false, 'message' => 'successfully']));
                         } else {
-                            die(json_encode(['error' => true, 'message' => 'not data']));
+                            die(json_encode(['error' => true, 'message' => 'failed']));
                         }
+                    } else {
+                        die(json_encode(['error' => true, 'message' => 'require data not catch it']));
                     }
-                } catch (\Throwable $th) {
-                    die(json_encode(['error' => true, 'message' => "you are not authorized" . $th]));
-                }
 
-            } else {
-                die(json_encode(['error' => true, 'message' => "you need authorization"]));
+                }
+            } catch (\Throwable $th) {
+                die(json_encode(['error' => true, 'message' => "you are not authorized" . $th]));
             }
-        } else {
-            die(json_encode(['error' => true, 'message' => "you are not send require params"]));
         }
     }
 
