@@ -1,6 +1,15 @@
 <?php
 
 // todo:in archive account we need to check token!!!
+
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
+header('Access-Control-Allow-Origin: *');
+header('Content-Type: application/json');
+header('Access-Control-Allow-Headers: Access-Control-Allow-Headers,Content-Type,Access-Control-Allow-Methods, Authorization, X-Requested-With');
+
+
+//header('Access-Control-Allow-Headers: Access-Control-Allow-Headers,Content-Type,Access-Control-Allow-Methods, Authorization, X-Requested-With');
+
 class User extends Controller
 {
     private mixed $db;
@@ -74,7 +83,10 @@ class User extends Controller
                     die(json_encode(['error' => true, 'message' => 'please confirm password ,passwords do not match']));
                 }
                 $password = password_hash($password, PASSWORD_DEFAULT);
-                $this->db->insertUser($username, $email, $password);
+                try {
+                    $this->db->insertUser($username, $email, $password);
+                } catch (PDOException $e) {
+                }
             }
 
         }

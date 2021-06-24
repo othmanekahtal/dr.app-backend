@@ -1,5 +1,8 @@
 <?php
-
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
+header('Access-Control-Allow-Origin: *');
+header('Content-Type: application/json');
+header('Access-Control-Allow-Headers: Access-Control-Allow-Headers,Content-Type,Access-Control-Allow-Methods, Authorization, X-Requested-With');
 
 class Api extends Controller
 {
@@ -61,7 +64,7 @@ class Api extends Controller
                     if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                         $records = $this->db->all_user_record($idUser);
                         if ($records) {
-                            die(json_encode(['error' => false, 'record' => $records[0]]));
+                            die(json_encode(['error' => false, 'records' => $records]));
                         } else {
                             die(json_encode(['error' => true, 'message' => 'not data']));
                         }
@@ -91,9 +94,9 @@ class Api extends Controller
                     if ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
                         if ($this->db->has_user_record($idUser, $id)) {
                             if ($this->db->change_status_record($id)) {
-                                (json_encode(['error' => false, 'message' => 'success']));
+                                die(json_encode(['error' => false, 'message' => 'success']));
                             } else {
-                                (json_encode(['error' => true, 'message' => 'can\'t delete record']));
+                                die(json_encode(['error' => true, 'message' => 'can\'t delete record']));
                             }
                         } else {
                             die(json_encode(['error' => true, 'message' => 'not data']));
@@ -170,4 +173,21 @@ class Api extends Controller
         }
     }
 
+    public function available()
+    {
+        if ($this->gettoken()) {
+            try {
+                $this->verification($this->gettoken());
+                if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                    $date = $_POST['date'];
+                    die(json_encode(['error' => false, 'not' => $this->db->available($date)]));
+                }
+            } catch (\Throwable $th) {
+                die(json_encode(['error' => true, 'message' => "you are not authorized" . $th]));
+            }
+        } else {
+            die(json_encode(['error' => true, 'message' => "you need authorization"]));
+        }
+
+    }
 }

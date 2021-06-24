@@ -61,7 +61,7 @@ class api_services
     public function change_status_record($id)
     {
         $sql = /** @lang text */
-            'update appointment set status=cancelled where id=:id';
+            'update appointment set status = \'cancelled\' where id=:id';
         $this->database->query($sql);
         $this->database->bind(':id', $id, PDO::PARAM_INT);
         return $this->database->execute();
@@ -90,4 +90,12 @@ class api_services
         return $this->database->execute();
     }
 
+    public function available($date)
+    {
+        $sql = /** @lang text */
+            'select time from appointment where date = :date and status = \'pending\'';
+        $this->database->query($sql);
+        $this->database->bind(':date', $date);
+        return $this->database->fetch_all_as_obj();
+    }
 }
