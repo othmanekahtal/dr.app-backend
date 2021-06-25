@@ -63,11 +63,7 @@ class Api extends Controller
                     $this->verification($this->gettoken());
                     if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                         $records = $this->db->all_user_record($idUser);
-                        if ($records) {
-                            die(json_encode(['error' => false, 'records' => $records]));
-                        } else {
-                            die(json_encode(['error' => true, 'message' => 'not data']));
-                        }
+                        die(json_encode(['error' => false, 'records' => $records]));
                     }
                 } catch (\Throwable $th) {
                     die(json_encode(['error' => true, 'message' => "you are not authorized" . $th]));

@@ -36,7 +36,7 @@ class User extends Controller
                 die(json_encode(['error' => true, 'message' => 'Your Email should be between 10 and 255']));
             }
             if (strlen($password) > 26 or strlen($password) < 10) {
-                die(json_encode(['error' => true, 'message' => 'Your password, should at least must be 6 character']));
+                die(json_encode(['error' => true, 'message' => 'Your password, should at least must be 10 character']));
             }
             try {
                 $user = $this->db->findUser($email, $password);
@@ -76,7 +76,7 @@ class User extends Controller
                 if (strlen($email) > 255 or strlen($email) < 10) {
                     die(json_encode(['error' => true, 'message' => 'Your Email should between 10 and 255']));
                 }
-                if (strlen($password) > 26 or strlen($password) < 6) {
+                if (strlen($password) > 26 or strlen($password) < 10) {
                     die(json_encode(['error' => true, 'message' => 'your password is invalid']));
                 }
                 if ($password_repeat != $password) {
@@ -84,8 +84,11 @@ class User extends Controller
                 }
                 $password = password_hash($password, PASSWORD_DEFAULT);
                 try {
-                    $this->db->insertUser($username, $email, $password);
+                    if ($this->db->insertUser($username, $email, $password)) {
+                        die(json_encode(['error' => false, 'message' => 'Your account saved successfully!']));
+                    };
                 } catch (PDOException $e) {
+                    die(json_encode(['error' => true, 'message' => 'System crashed!']));
                 }
             }
 
